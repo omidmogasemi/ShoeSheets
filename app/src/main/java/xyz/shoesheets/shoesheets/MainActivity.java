@@ -5,10 +5,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.View;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -70,8 +72,23 @@ public class MainActivity extends AppCompatActivity {
         saleSite = new File(ctx.getFilesDir(), "saleSite");
         salePrice = new File(ctx.getFilesDir(), "salePrice");
     }
-}
 
+    public void onLogSalesClick(View v) {
+        Intent myIntent = new Intent(getBaseContext(), LogSales.class);
+        // myIntent.putExtra(String name, int value); - allows you to pass extra information into the new activity
+        startActivity(myIntent);
+    }
+
+    public void onLogPurchasesClick(View v) {
+        Intent myIntent = new Intent(getBaseContext(), LogPurchases.class);
+        startActivity(myIntent);
+    }
+
+    public void onAnalyticsClick(View v) {
+        Intent myIntent = new Intent(getBaseContext(), Analytics.class);
+        startActivity(myIntent);
+    }
+}
 /*
 HOW TO PROPERLY OPEN, WRITE INTO, AND READ FROM A FILE ON THE ANDROID DEVICE'S INTERNAL STORAGE
         Context ctx = getApplicationContext();
