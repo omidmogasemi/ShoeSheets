@@ -22,9 +22,7 @@ import java.util.Scanner;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static File margins,
-            purchaseDate, purchaseType, purchaseItemName, purchaseSite, purchasePrice,
-            saleDate, saleType, saleItemName, saleSite, salePrice, predictedSales;
+    public static File margins, sales, purchases;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,16 +59,8 @@ public class MainActivity extends AppCompatActivity {
     private void initializeStorageFiles() {
         Context ctx = getApplicationContext();
         margins = new File(ctx.getFilesDir(), "margins");
-        purchaseDate = new File(ctx.getFilesDir(), "purchaseDate");
-        purchaseType = new File(ctx.getFilesDir(), "purchaseType");
-        purchaseItemName = new File(ctx.getFilesDir(), "purchaseItemName");
-        purchaseSite = new File(ctx.getFilesDir(), "purchaseSite");
-        purchasePrice = new File(ctx.getFilesDir(), "purchasePrice");
-        saleDate = new File(ctx.getFilesDir(), "saleDate");
-        saleType = new File(ctx.getFilesDir(), "saleDate");
-        saleItemName = new File(ctx.getFilesDir(), "saleItemName");
-        saleSite = new File(ctx.getFilesDir(), "saleSite");
-        salePrice = new File(ctx.getFilesDir(), "salePrice");
+        purchases = new File(ctx.getFilesDir(), "purchases");
+        sales = new File(ctx.getFilesDir(), "sales");
     }
 
     public void onLogSalesClick(View v) {
@@ -91,21 +81,26 @@ public class MainActivity extends AppCompatActivity {
 }
 /*
 HOW TO PROPERLY OPEN, WRITE INTO, AND READ FROM A FILE ON THE ANDROID DEVICE'S INTERNAL STORAGE
-        Context ctx = getApplicationContext();
-        margins = new File(ctx.getFilesDir(), "margins");
-        String fileContents = "Hello World!";
-        FileOutputStream outputStream;
+        // Read in the user's inputted price
+        EditText priceEdit;
+        priceEdit = (EditText)findViewById(R.id.priceInput);
+        String fileContents = priceEdit.getText().toString();
+
+        // writes the user's input to the specified file
         try{
             BufferedWriter out = new BufferedWriter(
-                    new FileWriter(margins, true));
+                    new FileWriter(MainActivity.purchasePrice, true));
             out.write(fileContents);
+            out.write("\n");
             out.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        // test to ensure that the file is being properly written to
         Scanner input = null;
         try {
-            input = new Scanner(margins);
+            input = new Scanner(MainActivity.purchasePrice);
             while (input.hasNextLine()){
                 Log.d("IT_WORKS", input.nextLine());
             }

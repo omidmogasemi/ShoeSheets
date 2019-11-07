@@ -3,4 +3,29 @@
     <string name="title_activity_log_sales">LogSales</string>
     <string name="title_activity_log_purchases">LogPurchases</string>
     <string name="title_activity_analytics">Analytics</string>
+    <string name="SubmitButton">Submit</string>
+    <string-array name="types_array">
+        <item>Bots</item>
+        <item>Clothing</item>
+        <item>Other</item>
+        <item>Shoes</item>
+    </string-array>
+    <string-array name="sites_array">
+        <item>Adidas</item>
+        <item>FinishLine</item>
+        <item>Footlocker</item>
+        <item>Kith</item>
+        <item>Nike SNKRS</item>
+        <item>Other</item>
+        <item>ShoePalace</item>
+        <item>YeezySupply</item>
+    </string-array>
+    <string-array name="brands_array">
+        <item>Jordan</item>
+        <item>Kith</item>
+        <item>Other</item>
+        <item>Palace</item>
+        <item>Supreme</item>
+        <item>Yeezy</item>
+    </string-array>
 </resources>
