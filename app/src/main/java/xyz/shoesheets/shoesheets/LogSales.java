@@ -2,6 +2,7 @@ package xyz.shoesheets.shoesheets;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,9 +22,10 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.util.Scanner;
 
-public class LogSales extends AppCompatActivity implements AdapterView.OnItemSelectedListener{
+public class LogSales extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
-    public String itemTypeContents = "", itemSiteContents = "", itemBrandContents = "";
+    private int errorCode;
+    private String saleTypeContents = "", saleSiteContents = "", saleBrandContents = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +35,9 @@ public class LogSales extends AppCompatActivity implements AdapterView.OnItemSel
         setSupportActionBar(toolbar);
         openFiles();
         initializeSpinners();
+        checkForErrorCodes();
+        EditText dateEdit = (EditText)findViewById(R.id.dateInput);
+        dateEdit.setHint("YY-MM-DD");
     }
 
     private void openFiles(){
@@ -64,17 +69,73 @@ public class LogSales extends AppCompatActivity implements AdapterView.OnItemSel
         public void onItemSelected(AdapterView<?> parent, View view, int pos, long l) {
             Spinner spinner = (Spinner) parent;
             if (spinner.getId() == R.id.typeSpinner)
-                itemTypeContents = parent.getItemAtPosition(pos).toString();
+                saleTypeContents = parent.getItemAtPosition(pos).toString();
             else if (spinner.getId() == R.id.sitesSpinner)
-                itemSiteContents = parent.getItemAtPosition(pos).toString();
+                saleSiteContents = parent.getItemAtPosition(pos).toString();
             else
-                itemBrandContents = parent.getItemAtPosition(pos).toString();
+                saleBrandContents = parent.getItemAtPosition(pos).toString();
         }
 
         @Override
         public void onNothingSelected(AdapterView<?> adapterView) {
 
         }
+
+    /*
+     * Checks to see if this Intent is the result of a previous error
+     * If it was, then return the proper error code to the user for why this error occurred
+     */
+    private void checkForErrorCodes() {
+        int receivedErrorCode;
+        EditText dateEdit = (EditText)findViewById(R.id.dateInput);
+        EditText itemNameEdit = (EditText)findViewById(R.id.itemNameInput);
+        EditText priceEdit = (EditText)findViewById(R.id.priceInput);
+        Intent intent = getIntent();
+        // fetch the extra intent info passed that contains the error code
+        receivedErrorCode = intent.getIntExtra("ERROR_CODE", 0);
+
+        // runs based off of the same error code assignment criteria from validateInput method
+        switch (receivedErrorCode) {
+            case 1:
+                dateEdit.setError("Your date entry MUST be 8 letters following the YY-MM-DD format");
+                break;
+            case 2:
+                itemNameEdit.setError("Your entry MUST contain something.");
+                break;
+            case 3:
+                priceEdit.setError("Your entry MUST contain something.");
+                break;
+            default:
+                return;
+        }
+    }
+
+    /*
+     * Checks the input in the three text boxes
+     * If the text input fails the following checks it will automatically go to the checkForErrorCodes()
+     * method via a new Intent:
+     * The date input MUST be 8 characters AND in a YY-MM-DD format
+     * The item name MUST be greater than 0 characters
+     * The item price MUST be greater than 0 characters and contain ONLY numbers
+     */
+    private boolean validateInput(EditText d, EditText n, EditText p) {
+        // in the case of a bad date input - NEED TO ADD A YY-MM-DD FORMAT CHECK AS WEL
+        if (d.getText().toString().length() != 8) {
+            errorCode = 1;
+            return false;
+        }
+        // in the case of a bad item name input
+        if (n.getText().toString().length() == 0) {
+            errorCode = 2;
+            return false;
+        }
+        // in the case of a bad price input - NEED TO ADD A NUMBER ONLY CHECK
+        if (p.getText().toString().length() == 0) {
+            errorCode = 3;
+            return false;
+        }
+        return true;
+    }
 
     public void hideKeyboard(View view) {
         InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
@@ -83,56 +144,72 @@ public class LogSales extends AppCompatActivity implements AdapterView.OnItemSel
 
     public void onSubmitClick(View v) {
         // Read in the user's inputted price
+        EditText dateEdit = (EditText)findViewById(R.id.dateInput);
         EditText itemNameEdit = (EditText)findViewById(R.id.itemNameInput);
         EditText priceEdit = (EditText)findViewById(R.id.priceInput);
-        String itemNameContents = itemNameEdit.getText().toString();
-        String priceContents = priceEdit.getText().toString();
-
-        itemNameEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    hideKeyboard(v);
-                }
-            }
-        });
-
-        priceEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    hideKeyboard(v);
-                }
-            }
-        });
-
-        // writes the user's input to the specified file
-        try{
-            BufferedWriter out = new BufferedWriter(
-                    new FileWriter(MainActivity.sales, true));
-            out.write(itemTypeContents + "|");
-            out.write(itemSiteContents + "|");
-            out.write(itemBrandContents + "|");
-            out.write(itemNameContents + "|");
-            out.write(priceContents);
-            // out.write("\n");
-            out.close();
-        } catch (Exception e) {
-            e.printStackTrace();
+        /*
+         * Validates the user's input in the three inputtable text boxes
+         * If the input is not correct, a new Intent will be launched
+        */
+        if (!validateInput(dateEdit, itemNameEdit, priceEdit) ) {
+            // creates a new intent
+            Intent myIntent = new Intent(getBaseContext(), LogSales.class);
+            // pass extra intent info that contains the error code
+            myIntent.putExtra("ERROR_CODE", errorCode);
+            startActivity(myIntent);
+            // closes this intent after the newly created intent is done
+            finish();
         }
+        else {
+            String dateContents = dateEdit.getText().toString();
+            String itemNameContents = itemNameEdit.getText().toString();
+            String priceContents = priceEdit.getText().toString();
 
-        // test to ensure that the file is being properly written to
-        Scanner input = null;
-        try {
-            input = new Scanner(MainActivity.sales);
-            while (input.hasNextLine()){
-                Log.d("IT_WORKS", input.nextLine());
+            itemNameEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (!hasFocus) {
+                        hideKeyboard(v);
+                    }
+                }
+            });
+
+            priceEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (!hasFocus) {
+                        hideKeyboard(v);
+                    }
+                }
+            });
+
+            // writes the user's input to the specified file
+            try {
+                BufferedWriter out = new BufferedWriter(
+                        new FileWriter(MainActivity.sales, true));
+                out.write(dateContents + "|");
+                out.write(saleTypeContents + "|");
+                out.write(saleSiteContents + "|");
+                out.write(saleBrandContents + "|");
+                out.write(itemNameContents + "|");
+                out.write(priceContents + "?\n");
+                out.close();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch(FileNotFoundException e) {
-            e.printStackTrace();
+
+            // test to ensure that the file is being properly written to
+            Scanner input = null;
+            try {
+                input = new Scanner(MainActivity.sales);
+                while (input.hasNextLine()) {
+                    Log.d("IT_WORKS", input.nextLine());
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            // return to the MainActivity
+            finish();
         }
-        // return to the MainActivity
-        finish();
     }
-
 }
