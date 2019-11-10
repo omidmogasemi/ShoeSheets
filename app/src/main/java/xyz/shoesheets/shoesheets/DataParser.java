@@ -28,6 +28,7 @@ public class DataParser {
         predictedSale = false;
     }
 
+    //
     public String getItemDate(){
         return itemDate;
     }
