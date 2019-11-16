@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 
@@ -26,13 +27,12 @@ public class LogSales extends AppCompatActivity implements AdapterView.OnItemSel
 
     private int errorCode;
     private String saleTypeContents = "", saleSiteContents = "", saleBrandContents = "";
+    private boolean predicted = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log_sales);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
         openFiles();
         initializeSpinners();
         checkForErrorCodes();
@@ -97,13 +97,13 @@ public class LogSales extends AppCompatActivity implements AdapterView.OnItemSel
         // runs based off of the same error code assignment criteria from validateInput method
         switch (receivedErrorCode) {
             case 1:
-                dateEdit.setError("Your date entry MUST be 8 letters following the YY-MM-DD format");
+                dateEdit.setError("Your date entry MUST be 8 letters following the YY-MM-DD format.");
                 break;
             case 2:
                 itemNameEdit.setError("Your entry MUST contain something.");
                 break;
             case 3:
-                priceEdit.setError("Your entry MUST contain something.");
+                priceEdit.setError("Your entry MUST contain something and contain ONLY numbers and a decimal place.");
                 break;
             default:
                 return;
@@ -114,13 +114,13 @@ public class LogSales extends AppCompatActivity implements AdapterView.OnItemSel
      * Checks the input in the three text boxes
      * If the text input fails the following checks it will automatically go to the checkForErrorCodes()
      * method via a new Intent:
-     * The date input MUST be 8 characters AND in a YY-MM-DD format
+     * The date input MUST be 8 characters AND in a YY-MM-DD format with ONLY number and - characters
      * The item name MUST be greater than 0 characters
      * The item price MUST be greater than 0 characters and contain ONLY numbers
      */
     private boolean validateInput(EditText d, EditText n, EditText p) {
-        // in the case of a bad date input - NEED TO ADD A YY-MM-DD FORMAT CHECK AS WEL
-        if (d.getText().toString().length() != 8) {
+        // in the case of a bad date input
+        if (badDateInput(d.getText().toString())) {
             errorCode = 1;
             return false;
         }
@@ -129,12 +129,60 @@ public class LogSales extends AppCompatActivity implements AdapterView.OnItemSel
             errorCode = 2;
             return false;
         }
-        // in the case of a bad price input - NEED TO ADD A NUMBER ONLY CHECK
-        if (p.getText().toString().length() == 0) {
+        // in the case of a bad price input
+        if (priceContainsNonDigits(p.getText().toString())) {
             errorCode = 3;
             return false;
         }
         return true;
+    }
+
+    // checks to see if any of the characters for the price entry contains a non-digit or non-hyphen character
+    private boolean badDateInput(String s) {
+        if (s.length() != 8)
+            return true;
+        Character temp;
+        for (int i = 0; i < 8; i++) {
+            temp = s.charAt(i);
+            switch (i) {
+                case 0:
+                case 1:
+                case 3:
+                case 4:
+                case 6:
+                case 7:
+                    if (temp < '0' || temp > '9')
+                        return true;
+                    break;
+                case 2:
+                case 5:
+                    if (!(temp == '-'))
+                        return true;
+                    break;
+            }
+        }
+        return false;
+    }
+
+    // checks to see if any of the characters for the price entry contains a non-digit character
+    private boolean priceContainsNonDigits(String s) {
+        Log.d("ERROR_DEBUGGING1", s);
+        if (s.length()  < 1)
+            return true;
+        Character temp;
+
+        for (int i = 0; i < s.length(); i++) {
+            temp = s.charAt(i);
+            if (!((Character.isDigit(temp)) || temp == '.'))
+                return true;
+        }
+        return false;
+    }
+
+    // Checks what the checkbox is after it has been clicked and updates predicted in accordance
+    public void onCheckBoxClicked(View view){
+        CheckBox isPredicted = (CheckBox)findViewById(R.id.predictedBox);
+        predicted = isPredicted.isChecked();
     }
 
     public void hideKeyboard(View view) {
@@ -187,6 +235,8 @@ public class LogSales extends AppCompatActivity implements AdapterView.OnItemSel
             try {
                 BufferedWriter out = new BufferedWriter(
                         new FileWriter(MainActivity.sales, true));
+                if (predicted)
+                    out.write("P");
                 out.write(dateContents + "|");
                 out.write(saleTypeContents + "|");
                 out.write(saleSiteContents + "|");

@@ -8,9 +8,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -23,6 +27,7 @@ import java.util.Scanner;
 public class MainActivity extends AppCompatActivity {
 
     public static File margins, sales, purchases;
+    static final int PICK_REQUEST = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         initializeStorageFiles();
+        initializeSalesInfo();
     }
 
     private void createStartVariables() {
@@ -61,22 +67,57 @@ public class MainActivity extends AppCompatActivity {
         margins = new File(ctx.getFilesDir(), "margins");
         purchases = new File(ctx.getFilesDir(), "purchases");
         sales = new File(ctx.getFilesDir(), "sales");
+        // File destination: /storage/emulated/0/purchases
+    }
+
+    public void initializeSalesInfo() {
+        TextView paView = (TextView)findViewById(R.id.purchasesAmount);
+        TextView asaView = (TextView)findViewById(R.id.actualSalesAmount);
+        TextView pmView = (TextView)findViewById(R.id.profitMarginAmount);
+        DataParser parser = new DataParser();
+        if (purchases.length() == 0) {
+            paView.setText("$" + 0.00);
+            asaView.setText("$" + 0.00);
+            pmView.setText("$" + 0.00);
+            return;
+        }
+        if (sales.length() == 0) {
+            asaView.setText("$" + 0.00);
+            pmView.setText("$" + 0.00);
+        }
+        paView.setText("$" + parser.calculatePurchases());
+        asaView.setText("$" + parser.calculateSales(false));
+        pmView.setText("$" + parser.calculateMargins(false));
     }
 
     public void onLogSalesClick(View v) {
         Intent myIntent = new Intent(getBaseContext(), LogSales.class);
         // myIntent.putExtra(String name, int value); - allows you to pass extra information into the new activity
-        startActivity(myIntent);
+        startActivityForResult(myIntent, 0);
     }
 
     public void onLogPurchasesClick(View v) {
         Intent myIntent = new Intent(getBaseContext(), LogPurchases.class);
-        startActivity(myIntent);
+        startActivityForResult(myIntent, 0);
     }
 
     public void onAnalyticsClick(View v) {
         Intent myIntent = new Intent(getBaseContext(), Analytics.class);
         startActivity(myIntent);
+    }
+
+    /*
+     * callback method when LogSales Activity finishes and closes
+     * might need to be edited - proper format has a check for a bad resultCode
+     * would not work with that check so i just eliminated it and now it works, but
+     * something bad could be happening (in memory maybe?) as a result of this
+     * COME BACK TO ADJUST LATER
+     */
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PICK_REQUEST) {
+            // updates the profit margin info at the top of the MainActivity
+            initializeSalesInfo();
+        }
     }
 }
 /*

@@ -9,13 +9,9 @@ import java.util.Scanner;
 public class DataParser {
     private String itemDate, itemType, itemSite, itemName, currentLine;
     private boolean predictedSale;
-    private double itemPrice, totalPurchases, totalSales, margins;
-    private File file, sales, purchases;
+    private double itemPrice, totalPurchases, totalSales, marginsAmount;
 
-    public DataParser(File f, File p, File s) {
-        file = f;
-        purchases = p;
-        sales = s;
+    public DataParser() {
         itemDate = "";
         itemType = "";
         itemSite = "";
@@ -24,7 +20,7 @@ public class DataParser {
         itemPrice = 0;
         totalPurchases = 0;
         totalSales = 0;
-        margins = 0;
+        marginsAmount = 0;
         predictedSale = false;
     }
 
@@ -115,64 +111,40 @@ public class DataParser {
         }
     }
 
-    public double calculateMargins(double p, double s, File m) {
+    public double calculatePurchases(){
         Scanner purchasesInput;
         try {
-            purchasesInput = new Scanner(sales);
+            purchasesInput = new Scanner(MainActivity.purchases);
             while (purchasesInput.hasNextLine()) {
                 currentLine = purchasesInput.nextLine();
                 if (currentLine.substring(0, 1).equals("P"))
                     continue;
+                Log.d("PARSER_DEBUGGING", Double.parseDouble(currentLine.substring(currentLine.lastIndexOf("|") + 1, currentLine.indexOf("?"))) + "");
                 totalPurchases += Double.parseDouble(currentLine.substring(currentLine.lastIndexOf("|") + 1, currentLine.indexOf("?")));
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-
-        Scanner salesInput;
-        try {
-            salesInput = new Scanner(sales);
-            while (salesInput.hasNextLine()) {
-                currentLine = salesInput.nextLine();
-                if (currentLine.substring(0, 1).equals("P"))
-                    continue;
-                totalSales += Double.parseDouble(currentLine.substring(currentLine.lastIndexOf("|") + 1, currentLine.indexOf("?")));
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        margins = totalSales - totalPurchases;
-        return margins;
+        return totalPurchases;
     }
 
-    public double calculatePredictedMargins(double p, double s, File m) {
-        Scanner purchasesInput;
-        try {
-            purchasesInput = new Scanner(sales);
-            while (purchasesInput.hasNextLine()) {
-                currentLine = purchasesInput.nextLine();
-                if (currentLine.substring(0, 1).equals("P"))
-                    continue;
-                totalPurchases += Double.parseDouble(currentLine.substring(currentLine.lastIndexOf("|") + 1, currentLine.indexOf("?")));
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
+    public double calculateSales(boolean p){
         Scanner salesInput;
         try {
-            salesInput = new Scanner(sales);
+            salesInput = new Scanner(MainActivity.sales);
             while (salesInput.hasNextLine()) {
                 currentLine = salesInput.nextLine();
-                if (currentLine.substring(0, 1).equals("P"))
+                if (currentLine.substring(0, 1).equals("P") && !p)
                     continue;
                 totalSales += Double.parseDouble(currentLine.substring(currentLine.lastIndexOf("|") + 1, currentLine.indexOf("?")));
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        margins = totalSales - totalPurchases;
-        return margins;
+        return totalSales;
+    }
+
+    public double calculateMargins(boolean p) {
+        return calculateSales(p) - calculatePurchases();
     }
 }
