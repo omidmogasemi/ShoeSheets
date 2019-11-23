@@ -12,7 +12,9 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.w3c.dom.Text;
 
@@ -28,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static File margins, sales, purchases;
     static final int PICK_REQUEST = 0;
+    public ImageView settingsClick;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +52,16 @@ public class MainActivity extends AppCompatActivity {
 
         initializeStorageFiles();
         initializeSalesInfo();
+
+        settingsClick = (ImageView)findViewById(R.id.settingsIcon);
+        settingsClick.setClickable(true);
+        settingsClick.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View v){
+                Intent myIntent = new Intent(getBaseContext(), Settings.class);
+                startActivity(myIntent);
+            }
+        });
     }
 
     private void createStartVariables() {
