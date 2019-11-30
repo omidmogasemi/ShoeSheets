@@ -12,9 +12,13 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import org.w3c.dom.Text;
 
@@ -28,19 +32,32 @@ import java.util.Scanner;
 
 public class MainActivity extends AppCompatActivity {
 
+    /* TO-DO:
+     * Configure user authentication with Google FireBase (see website's front home-page)
+     * Configure reading and writing in realtime with Google Firebase
+     * Update project support email
+     */
+
     public static File margins, sales, purchases;
     static final int PICK_REQUEST = 0;
     public ImageView settingsClick;
+
+    private FirebaseUser currentUser;
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
+
         // creates a static sharedpreferences so variables stored in phone memory can be accessed by all other classes
         // can be accessed by MainActivity.SharedPreferences
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean firstStart = prefs.getBoolean("firstStart", true);
+        boolean wantPredicted = prefs.getBoolean("wantPredicted", false);
         SharedPreferences.Editor editor = prefs.edit();
 
         // check if the app has been opened before
@@ -131,6 +148,20 @@ public class MainActivity extends AppCompatActivity {
             // updates the profit margin info at the top of the MainActivity
             initializeSalesInfo();
         }
+    }
+
+    protected void onStart(){
+        super.onStart();
+
+        // check if user is authenticated
+        if (currentUser == null) {
+            sendUserToLoginActivity();
+        }
+    }
+
+    private void sendUserToLoginActivity() {
+        Intent loginIntent = new Intent(MainActivity.this, LoginActivity.class);
+        startActivity(loginIntent);
     }
 }
 /*

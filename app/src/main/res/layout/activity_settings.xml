@@ -11,7 +11,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="40dp"
-        android:layout_marginLeft="40dp"
         android:layout_marginTop="152dp"
         android:text="TextView"
         app:layout_constraintStart_toStartOf="parent"
@@ -23,10 +22,18 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="153dp"
         android:layout_marginEnd="93dp"
-        android:layout_marginRight="93dp"
         android:text="Switch"
         android:textOff="OFF"
         android:textOn="ON"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/logout_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="19dp"
+        android:text="Sign out"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

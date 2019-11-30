@@ -12,7 +12,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="268dp"
         android:layout_marginEnd="18dp"
-        android:layout_marginRight="18dp"
         android:onClick="onLogPurchasesClick"
         android:text="Button"
         app:layout_constraintEnd_toEndOf="@+id/actualSalesAmount"
@@ -43,7 +42,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="28dp"
-        android:layout_marginLeft="28dp"
         android:text="TPurchases"
         app:layout_constraintBaseline_toBaselineOf="@+id/purchasesAmount"
         app:layout_constraintStart_toStartOf="parent" />
@@ -53,7 +51,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
-        android:layout_marginLeft="15dp"
         android:layout_marginTop="40dp"
         android:text="TextView"
         app:layout_constraintStart_toEndOf="@+id/purchasesInfoLabel"
@@ -64,7 +61,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="31dp"
-        android:layout_marginRight="31dp"
         android:text="Sales:"
         app:layout_constraintBaseline_toBaselineOf="@+id/profitMarginAmount"
         app:layout_constraintEnd_toStartOf="@+id/profitMarginAmount" />
@@ -74,7 +70,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="23dp"
-        android:layout_marginLeft="23dp"
         android:text="TextView"
         app:layout_constraintBaseline_toBaselineOf="@+id/profitMarginLabel"
         app:layout_constraintStart_toEndOf="@+id/profitMarginLabel" />
@@ -84,7 +79,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="95dp"
-        android:layout_marginLeft="95dp"
         android:layout_marginTop="96dp"
         android:layout_marginBottom="94dp"
         android:text="Total Margins:"
@@ -98,7 +92,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
         android:layout_marginEnd="53dp"
-        android:layout_marginRight="53dp"
         android:text="TextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -108,9 +101,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
         android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@android:drawable/ic_menu_preferences" />
+
+    <Button
+        android:id="@+id/loginButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="28dp"
+        android:layout_marginBottom="32dp"
+        android:text="Login"
+        android:onClick="onLoginClick"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
